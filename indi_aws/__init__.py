@@ -9,5 +9,5 @@ interaction with the AWS cloud
 '''
 
 # Import Python modules
-import aws_utils
-import fetch_creds
+from . import aws_utils
+from . import fetch_creds

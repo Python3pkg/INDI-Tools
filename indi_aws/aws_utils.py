@@ -90,8 +90,8 @@ def md5_sum(bucket, prefix='', filt_str=''):
         if filt_str in filename:
             md5_sum = str(bkey.etag).strip('"')
             md5_dict[filename] = md5_sum
-            print 'filename: %s' % filename
-            print 'md5_sum: %s' % md5_sum
+            print('filename: %s' % filename)
+            print('md5_sum: %s' % md5_sum)
 
     # Return the dictionary
     return md5_dict
@@ -142,7 +142,7 @@ def s3_rename(bucket, src_dst_tuple, keep_old=False, make_public=False):
 
     # Check if the list lengths match 
     if num_files != len(dst_list):
-        raise RuntimeError, 'src_list and dst_list must be the same length!'
+        raise RuntimeError('src_list and dst_list must be the same length!')
 
     # And iterate over keys to copy over new ones
     for idx, src_f in enumerate(src_list):
@@ -150,7 +150,7 @@ def s3_rename(bucket, src_dst_tuple, keep_old=False, make_public=False):
         try:
             src_key_exists = src_key.get()
         except ClientError as exc:
-            print 'source file %s doesnt exist, skipping...' % src_f
+            print('source file %s doesnt exist, skipping...' % src_f)
             continue
 
         # Get corresponding destination file
@@ -158,13 +158,13 @@ def s3_rename(bucket, src_dst_tuple, keep_old=False, make_public=False):
         dst_obj = bucket.Object(key=dst_key)
         try:
             dst_key_exists = dst_obj.get()
-            print 'Destination key %s exists, skipping...' % dst_key
+            print('Destination key %s exists, skipping...' % dst_key)
             continue
         except ClientError as exc:
-            print 'copying source: ', str(src_f)
-            print 'to destination: ', dst_key
+            print('copying source: ', str(src_f))
+            print('to destination: ', dst_key)
             if make_public:
-                print 'making public...'
+                print('making public...')
                 dst_obj.copy_from(CopySource=bucket.name + '/' + str(src_f), ACL='public-read')
             else:
                 dst_obj.copy_from(CopySource=bucket.name + '/' + str(src_f))
@@ -173,10 +173,10 @@ def s3_rename(bucket, src_dst_tuple, keep_old=False, make_public=False):
 
         # Print status
         per = 100*(float(idx+1)/num_files)
-        print 'Done renaming %d/%d\n%f%% complete' % (idx+1, num_files, per)
+        print('Done renaming %d/%d\n%f%% complete' % (idx+1, num_files, per))
 
     # Done iterating through list
-    print 'done!'
+    print('done!')
 
 
 # Delete s3 keys based on input list
@@ -205,16 +205,16 @@ def s3_delete(bucket, bucket_keys):
     # Iterate over list and delete S3 items
     for idx, bkey in enumerate(bucket_keys):
         try:
-            print 'attempting to delete %s from %s...' % (bkey, bucket.name)
+            print('attempting to delete %s from %s...' % (bkey, bucket.name))
             bobj = bucket.Object(bkey)
             bobj.delete()
             per = 100*(float(idx+1)/num_files)
-            print 'Done deleting %d/%d\n%f%% complete' % (idx+1, num_files, per)
+            print('Done deleting %d/%d\n%f%% complete' % (idx+1, num_files, per))
         except Exception as exc:
-            print 'Unable to delete bucket key %s because of: %s' % (bkey, exc)
+            print('Unable to delete bucket key %s because of: %s' % (bkey, exc))
 
     # Done iterating through list
-    print 'done!'
+    print('done!')
 
 
 # Download files from AWS S3 to local machine
@@ -276,26 +276,26 @@ def s3_download(bucket, s3_local_tuple):
             in_read = open(local_path, 'rb').read()
             local_md5 = hashlib.md5(in_read).hexdigest()
             if local_md5 == s3_md5:
-                print 'Skipping %s, already downloaded...' % bkey
+                print('Skipping %s, already downloaded...' % bkey)
             else:
                 try:
-                    print 'Overwriting %s...' % local_path
+                    print('Overwriting %s...' % local_path)
                     bucket.download_file(bkey, local_path,
                                          Callback=ProgressPercentage(bobj))
                 except Exception as exc:
-                    print 'Could not download file %s because of: %s, skipping..' \
-                          % (bkey, exc)
+                    print('Could not download file %s because of: %s, skipping..' \
+                          % (bkey, exc))
         else:
-            print 'Downloading %s to %s' % (bkey, local_path)
+            print('Downloading %s to %s' % (bkey, local_path))
             bucket.download_file(bkey, local_path,
                                  Callback=ProgressPercentage(bobj))
 
         # Print status
         per = 100*(float(idx+1)/num_files)
-        print 'finished file %d/%d\n%f%% complete\n' % (idx+1, num_files, per)
+        print('finished file %d/%d\n%f%% complete\n' % (idx+1, num_files, per))
 
     # Done iterating through list
-    print 'done!'
+    print('done!')
 
 
 # Upload files to AWS S3
@@ -346,7 +346,7 @@ def s3_upload(bucket, local_s3_tuple, make_public=False, encrypt=False):
 
     # Check if the list lengths match 
     if num_files != len(s3_list):
-        raise RuntimeError, 'local_list and s3_list must be the same length!'
+        raise RuntimeError('local_list and s3_list must be the same length!')
 
     # For each source file, upload
     for idx, src_file in enumerate(local_list):
@@ -362,8 +362,8 @@ def s3_upload(bucket, local_s3_tuple, make_public=False, encrypt=False):
             dst_file = dst_file.replace(s3_str+bucket_name, '').lstrip('/')
 
         # Print status
-        print 'Uploading %s to S3 bucket %s as %s' % \
-        (src_file, bucket.name, dst_file)
+        print('Uploading %s to S3 bucket %s as %s' % \
+        (src_file, bucket.name, dst_file))
 
         # Create a new key from the bucket and set its contents
         dst_key = bucket.Object(key=dst_file)
@@ -384,10 +384,10 @@ def s3_upload(bucket, local_s3_tuple, make_public=False, encrypt=False):
                                Callback=ProgressPercentage(src_file))
 
         per = 100*(float(idx+1)/num_files)
-        print 'finished file %d/%d\n\n%f%% complete\n' % (idx+1, num_files, per)
+        print('finished file %d/%d\n\n%f%% complete\n' % (idx+1, num_files, per))
 
     # Print when finished
-    print 'Done!'
+    print('Done!')
 
 
 # Test write-access to bucket
@@ -448,7 +448,7 @@ def test_bucket_access(creds_path, output_directory):
     # Attempt a write to bucket
     try:
         bucket.upload_file(test_file, write_test_key)
-        print 'Confirmed S3 write access for CPAC output!'
+        print('Confirmed S3 write access for CPAC output!')
         test_key = bucket.Object(key=write_test_key)
         test_key.delete()
         s3_write_access = True

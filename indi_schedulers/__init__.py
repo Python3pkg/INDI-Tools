@@ -8,4 +8,4 @@ managing batch job submissions to cluster schedulers
 '''
 
 # Import packages
-import cluster_templates
+from . import cluster_templates

@@ -22,7 +22,7 @@ def cluster_job_submit(run_cmd=None):
     '''
 
     # Import packages
-    import commands
+    import subprocess
     import getpass
     import os
     import re
@@ -35,7 +35,7 @@ def cluster_job_submit(run_cmd=None):
     cluster_files_dir = os.path.join(os.path.expanduser('~'), 'cluster_logs')
 
     # Batch file variables
-    shell = commands.getoutput('echo $SHELL')
+    shell = subprocess.getoutput('echo $SHELL')
     user_account = getpass.getuser()
 
     # Set up config dictionary
@@ -81,7 +81,7 @@ def cluster_job_submit(run_cmd=None):
         f.write(batch_file_contents)
 
     # Get output response from job submission
-    out = commands.getoutput('%s %s' % (exec_cmd, batch_filepath))
+    out = subprocess.getoutput('%s %s' % (exec_cmd, batch_filepath))
 
     # Check for successful qsub submission
     if re.search(confirm_str, out) == None:

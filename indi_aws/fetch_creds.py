@@ -95,8 +95,8 @@ def return_bucket(creds_path, bucket_name):
                       % (creds_path, exc)
             raise Exception(err_msg)
         # Init connection
-        print 'Connecting to S3 bucket: %s with credentials from %s ...'\
-              % (bucket_name, creds_path)
+        print('Connecting to S3 bucket: %s with credentials from %s ...'\
+              % (bucket_name, creds_path))
         # Better when being used in multi-threading, see:
         # http://boto3.readthedocs.org/en/latest/guide/resources.html#multithreading
         session = boto3.session.Session(aws_access_key_id=aws_access_key_id,
@@ -105,7 +105,7 @@ def return_bucket(creds_path, bucket_name):
 
     # Otherwise, connect anonymously
     else:
-        print 'Connecting to AWS: %s anonymously...' % bucket_name
+        print('Connecting to AWS: %s anonymously...' % bucket_name)
         session = boto3.session.Session()
         s3_resource = session.resource('s3', use_ssl=True)
         s3_resource.meta.client.meta.events.register('choose-signer.s3.*',
